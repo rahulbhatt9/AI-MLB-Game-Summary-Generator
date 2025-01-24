@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLB Game Summary</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='scripts.js') }}" defer></script>
+</head>
+<body>
+    <h1>AI MLB Game Summary Generator</h1>
+
+    <form action="/" method="GET">
+        <label for="game_date">Select Game Date:</label>
+        <input 
+            type="date" 
+            id="game_date" 
+            name="game_date" 
+            value="{{ request.args.get('game_date') }}" 
+            required
+        >
+        <button type="submit">Select Date</button>
+    </form>
+    
+    {% if request.args.get('game_date') %}
+        <form action="/game_summary" method="POST" onsubmit="showLoadingBar()">
+            <label for="game_pk">Select Game:</label>
+            <select id="game_pk" name="game_pk">
+                {% for game in games %}
+                    {% if game['game_date'][:10] == request.args.get('game_date') %}
+                        <option value="{{ game['game_pk'] }}">
+                            {{ game['game_date'] }} - {{ game['team_away'] }} vs {{ game['team_home'] }}
+                        </option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <button type="submit">Get Game Summary</button>
+        </form>
+        <div class="loading-bar" id="loading-bar"></div>
+    {% endif %}
+    
+    {% if selected_game_summary %}
+        <div class="game-summary">
+            <h2>Game Summary</h2>
+            <p>{{ selected_game_summary }}</p>
+        </div>
+        
+        {% if audio_path %}
+            <div class="audio-player">
+                <h3>Listen to the Game Summary:</h3>
+                <audio controls>
+                    <source src="{{ url_for('static', filename=audio_path) }}" type="audio/mp3">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        {% endif %}
+    {% endif %}
+</body>
+</html>
