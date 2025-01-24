@@ -1,10 +1,8 @@
 from flask import Flask, render_template, request
 import requests
 from openai import OpenAI
-import os
 from dotenv import load_dotenv
 from pathlib import Path
-from IPython.display import Audio, display
 
 app = Flask(__name__)
 
